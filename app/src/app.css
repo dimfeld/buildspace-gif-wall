@@ -1,0 +1,6 @@
+@import url('https://rsms.me/inter/inter.css');
+
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
