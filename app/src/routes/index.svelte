@@ -29,9 +29,11 @@
 
   async function initAccount() {
     let [account, listAccountBump] = await web3.PublicKey.findProgramAddress(
-      [new TextEncoder().encode('giflist'), provider.wallet.publicKey.toBytes()],
+      [new TextEncoder().encode('giflist2'), provider.wallet.publicKey.toBytes()],
       program.programId
     );
+
+    console.log('List account', account.toString());
 
     try {
       await fetchAccountData(account);
@@ -65,18 +67,53 @@
       return;
     }
 
-    testGifs = [...testGifs, textInput];
+    await program.rpc.addGif(textInput, {
+      accounts: {
+        baseAccount: listAccount,
+        listOwner: provider.wallet.publicKey,
+        user: provider.wallet.publicKey,
+      },
+    });
+
+    fetchAccountData();
+
     e.target.focus();
     textInput = '';
   }
 
-  async function readAccountData() {
-    // const account = await program.account.baseAccount.fetch(baseAccountPubkey);
-    // items = account.data;
+  async function upvote(url: string) {
+    await program.rpc.upvote(url, {
+      accounts: {
+        baseAccount: listAccount,
+        listOwner: provider.wallet.publicKey,
+        user: provider.wallet.publicKey,
+      },
+    });
+
+    fetchAccountData();
   }
 
-  function resetAccount() {
-    items = [];
+  async function deleteList(account = listAccount) {
+    await program.rpc.deleteList({
+      accounts: {
+        baseAccount: account,
+        user: provider.wallet.publicKey,
+        systemProgram: SystemProgram.programId,
+      },
+    });
+  }
+
+  async function sendTip(pubkey) {
+    const transaction = new web3.Transaction().add(
+      web3.SystemProgram.transfer({
+        fromPubkey: provider.wallet.publicKey,
+        toPubkey: pubkey,
+        lamports: web3.LAMPORTS_PER_SOL / 100,
+      })
+    );
+
+    let tx = await $wallet.sendTransaction(transaction, connection).catch(console.error);
+    alert(`Tip tx ${tx}`);
   }
 
   let testGifs = [
@@ -94,24 +131,28 @@
 
   <form action="#" class="mt-2 flex flex-row" on:submit={handleAdd}>
     <input type="text" placeholder="Add an image!" bind:value={textInput} class="px-2 flex-grow" />
-    <button class="ml-2" type="submit">Add</button>
+    <button class="ml-2 bg-gray-800 border border-gray-500 rounded px-3 py-2" type="submit">Add</button>
   </form>
   <ul id="images" class="flex flex-row flex-wrap mt-2 gap-4">
     {#each items as item}
-      <li><img src={item.url} alt="Panda!" /></li>
+      <li class="flex flex-col">
+        <img src={item.url} alt="Added by {item.adder.toString()}" />
+        <div class="flex justify-between">
+          <button title="Send a tip to {item.adder.toString()}" on:click={() => sendTip(item.adder)}>🤑</button>
+          <span>{item.votes} Votes</span>
+          <button on:click={() => upvote(item.url)}>👍</button>
+        </div>
+      </li>
     {:else}
       <li class="px-3 py-2">Your list is empty, add something!</li>
     {/each}
   </ul>
+  <!-- <button on:click={deleteList}>Delete this List</button> -->
 </div>
 
 <style lang="postcss">
   input {
     @apply bg-gray-800;
-  }
-
-  button {
-    @apply bg-gray-800 border border-gray-500 rounded px-3 py-2;
   }
 
   #images > li {

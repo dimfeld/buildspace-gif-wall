@@ -15,7 +15,7 @@ describe('buildspace-gif-wall', () => {
 
   async function getListAddress() {
     let [baseAccount, bump] = await anchor.web3.PublicKey.findProgramAddress([
-      Buffer.from("giflist"),
+      Buffer.from("giflist2"),
       provider.wallet.publicKey.toBytes(),
     ], program.programId);
 
@@ -61,5 +61,16 @@ describe('buildspace-gif-wall', () => {
     listData = await program.account.baseAccount.fetch(baseAccount);
     console.log('GIFs after addGif', listData.gifs);
     expect(listData.gifs.length).eq(1);
+  });
+
+  it('Deletes an item', async () => {
+    let { baseAccount } = await getListAddress();
+    await program.rpc.deleteList({
+      accounts: {
+        baseAccount,
+        user: provider.wallet.publicKey,
+        systemProgram: SystemProgram.programId,
+      }
+    })
   })
 });
