@@ -1,11 +1,11 @@
 [programs.localnet]
-buildspace_gif_wall = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+buildspace_gif_wall = "DkZNiYb8jAQJA4qdPmhn8dutfHsGbwVMb1zNoSQceBkq"
 
 [registry]
 url = "https://anchor.projectserum.com"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "/home/dimfeld/.config/solana/id.json"
 
 [scripts]

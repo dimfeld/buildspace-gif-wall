@@ -14,6 +14,47 @@
     preflightCommitment: commitmentLevel,
   });
   $: program = new Program(idl, programID, provider);
+  let listAccount: PublicKey | null = null;
+
+  async function createAccount(account, bump) {
+    console.log('creating account', account);
+    return program.rpc.newList(bump, {
+      accounts: {
+        baseAccount: account,
+        user: provider.wallet.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      },
+    });
+  }
+
+  async function initAccount() {
+    let [account, listAccountBump] = await web3.PublicKey.findProgramAddress(
+      [new TextEncoder().encode('giflist'), provider.wallet.publicKey.toBytes()],
+      program.programId
+    );
+
+    try {
+      await fetchAccountData(account);
+    } catch (e) {
+      if (/Account does not exist/.test(e.message)) {
+        await createAccount(account, listAccountBump);
+      } else {
+        throw e;
+      }
+    }
+
+    listAccount = account;
+  }
+
+  async function fetchAccountData(account = listAccount) {
+    let listData = await program.account.baseAccount.fetch(account);
+    console.log('Got account', account, listData);
+    items = listData.gifs;
+  }
+
+  $: if (program && !listAccount) {
+    initAccount().catch(console.error);
+  }
 
   let items = [];
 
@@ -45,7 +86,7 @@
     'https://media4.giphy.com/media/N6funLtVsHW0g/giphy.webp?cid=ecf05e475pbx7elu6edgcfpcigb8icske07oqo0189twill5&rid=giphy.webp&ct=g',
   ];
 
-  $: items = testGifs.map((url) => ({ url }));
+  // $: items = testGifs.map((url) => ({ url }));
 </script>
 
 <div class="mx-auto">
@@ -57,7 +98,7 @@
   </form>
   <ul id="images" class="flex flex-row flex-wrap mt-2 gap-4">
     {#each items as item}
-      <li><img src={item.url} /></li>
+      <li><img src={item.url} alt="Panda!" /></li>
     {:else}
       <li class="px-3 py-2">Your list is empty, add something!</li>
     {/each}

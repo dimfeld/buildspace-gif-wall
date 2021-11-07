@@ -18,7 +18,7 @@
 
   const commitmentLevel: Commitment = 'processed';
 
-  const network = 'http://127.0.0.1:8899';
+  const network = 'https://api.devnet.solana.com';
   const connection = new Connection(network, commitmentLevel);
 
   setSolanaContext({ wallet, connection, commitmentLevel });
