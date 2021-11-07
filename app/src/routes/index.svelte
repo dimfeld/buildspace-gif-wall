@@ -115,15 +115,6 @@
     let tx = await $wallet.sendTransaction(transaction, connection).catch(console.error);
     alert(`Tip tx ${tx}`);
   }
-
-  let testGifs = [
-    'https://media1.giphy.com/media/EatwJZRUIv41G/giphy.webp?cid=ecf05e475pbx7elu6edgcfpcigb8icske07oqo0189twill5&rid=giphy.webp&ct=g',
-    'https://media0.giphy.com/media/TObbUke0z8Mo/200.webp?cid=ecf05e475pbx7elu6edgcfpcigb8icske07oqo0189twill5&rid=200.webp&ct=g',
-    'https://media4.giphy.com/media/xNuoUMEJCdVKVm7r2x/200w.webp?cid=ecf05e475pbx7elu6edgcfpcigb8icske07oqo0189twill5&rid=200w.webp&ct=g',
-    'https://media4.giphy.com/media/N6funLtVsHW0g/giphy.webp?cid=ecf05e475pbx7elu6edgcfpcigb8icske07oqo0189twill5&rid=giphy.webp&ct=g',
-  ];
-
-  // $: items = testGifs.map((url) => ({ url }));
 </script>
 
 <div class="mx-auto">

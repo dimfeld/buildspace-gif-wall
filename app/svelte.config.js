@@ -1,6 +1,16 @@
 import preprocess from 'svelte-preprocess';
 import adapter from '@sveltejs/adapter-vercel';
 
+// Overrides for written code that assumes Node.js
+const defines = {
+  'process.version': '"1000"', // @torus imports pump which checks for Node 0.x
+};
+
+if (process.env.ACTION !== 'BUILD') {
+  // borsh
+  defines['global.TextDecoder'] = 'TextDecoder';
+}
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   // Consult https://github.com/sveltejs/svelte-preprocess
@@ -17,12 +27,7 @@ const config = {
       entries: ['*'],
     },
     vite: () => ({
-      define: {
-        // Overrides for written code that assumes Node.js
-        // 'global.TextDecoder': 'TextDecoder', // borsh
-        'process.version': '"1000"', // @torus imports pump which checks for Node 0.x
-      },
-      ssr: {},
+      define: defines,
       optimizeDeps: {
         include: ['eventemitter3'],
       },
