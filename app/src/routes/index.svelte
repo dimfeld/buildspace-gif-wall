@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { Program, Provider, web3 } from '@project-serum/anchor';
-  import { WalletConnectionState, walletConnectionStateLabels } from '$lib/wallets';
+  import * as anchor from '@project-serum/anchor';
+  const { Provider, Program, web3 } = anchor;
+
   import { getSolanaContext } from '$lib/context';
   import idl from '$lib/idl/buildspace_gif_wall.json';
-  import { Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
-  import { getContext, onMount } from 'svelte';
+  import { PublicKey, SystemProgram } from '@solana/web3.js';
 
   const { wallet, connection, commitmentLevel } = getSolanaContext();
-  const baseAccount: PublicKey = getContext('baseAccount');
 
   const programID = new PublicKey(idl.metadata.address);
   $: provider = new Provider(connection, $wallet, {
@@ -15,6 +14,7 @@
   });
   $: program = new Program(idl, programID, provider);
   let listAccount: PublicKey | null = null;
+  const listOwner = new PublicKey('Gcdp6Mw1BfRPWuJFvFmNwjvgkSDyWgot6Yp2hfw81KL5');
 
   async function createAccount(account, bump) {
     console.log('creating account', account);
@@ -70,7 +70,7 @@
     await program.rpc.addGif(textInput, {
       accounts: {
         baseAccount: listAccount,
-        listOwner: provider.wallet.publicKey,
+        listOwner,
         user: provider.wallet.publicKey,
       },
     });
@@ -85,7 +85,7 @@
     await program.rpc.upvote(url, {
       accounts: {
         baseAccount: listAccount,
-        listOwner: provider.wallet.publicKey,
+        listOwner,
         user: provider.wallet.publicKey,
       },
     });

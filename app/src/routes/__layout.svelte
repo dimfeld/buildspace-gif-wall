@@ -1,6 +1,9 @@
 <script context="module">
   import { Buffer } from 'buffer'; // @ledger assumes this is available but it's only native to Node
   globalThis.Buffer = Buffer;
+  if (typeof window !== 'undefined') {
+    window.global = globalThis;
+  }
 </script>
 
 <script lang="ts">

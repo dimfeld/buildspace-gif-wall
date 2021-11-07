@@ -1,4 +1,5 @@
 import preprocess from 'svelte-preprocess';
+import adapter from '@sveltejs/adapter-vercel';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -11,10 +12,14 @@ const config = {
   ],
 
   kit: {
+    adapter: adapter(),
+    prerender: {
+      entries: ['*'],
+    },
     vite: () => ({
       define: {
         // Overrides for written code that assumes Node.js
-        'global.TextDecoder': 'TextDecoder', // borsh
+        // 'global.TextDecoder': 'TextDecoder', // borsh
         'process.version': '"1000"', // @torus imports pump which checks for Node 0.x
       },
       ssr: {},
