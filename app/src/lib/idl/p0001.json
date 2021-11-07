@@ -1,0 +1,67 @@
+{
+  "version": "0.0.0",
+  "name": "p0001",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        {
+          "name": "baseAccount",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "firstLine",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "add",
+      "accounts": [
+        {
+          "name": "baseAccount",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "line",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "BaseAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lines",
+            "type": {
+              "vec": "string"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "address": "DbwyCYv83xm4TvTNtUFp8LwtKFtwaKK4P1HcDjAktoLb"
+  }
+}
