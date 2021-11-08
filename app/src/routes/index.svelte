@@ -162,8 +162,9 @@
       <li class="flex flex-col">
         <img src={item.url} alt="Added by {item.adder.toString()}" />
         <div class="flex justify-between">
-          <button title="Send a tip to {item.adder.toString()}" on:click={() => sendTip(item.adder)}>🤑</button>
-          <span>{item.votes} Votes</span>
+          <button title="Send a 0.01 SOL tip to {item.adder.toString()}" on:click={() => sendTip(item.adder)}
+            >🤑</button>
+          <span>{item.votes} {item.votes.toString() == 1 ? 'Vote' : 'Votes'}</span>
           <button on:click={() => upvote(item.url)}>👍</button>
         </div>
       </li>
