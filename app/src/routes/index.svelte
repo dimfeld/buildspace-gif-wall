@@ -4,7 +4,7 @@
 
   import { getSolanaContext } from '$lib/context';
   import idl from '$lib/idl/buildspace_gif_wall.json';
-  import { Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
+  import { PublicKey, SystemProgram } from '@solana/web3.js';
   import { WalletConnectionState } from '../lib/wallets';
   import { onMount } from 'svelte';
 
@@ -12,7 +12,7 @@
 
   const programID = new PublicKey(idl.metadata.address);
   const unconnectedWallet = {
-    publicKey: new Keypair().publicKey,
+    publicKey: null,
     signTransaction: () => Promise.reject(new Error('Not connected to wallet')),
     signAllTransactions: () => Promise.reject(new Error('Not connected to wallet')),
   };
@@ -76,7 +76,7 @@
   let textInput = '';
   async function handleAdd(e: Event) {
     if (!connectedToWallet) {
-      alert('Please connect to your wallet first');
+      alert('Please connect to your wallet using the "Connect to Wallet" button');
       return;
     }
 
@@ -101,7 +101,7 @@
 
   async function upvote(url: string) {
     if (!connectedToWallet) {
-      alert('Please connect to your wallet first');
+      alert('Please connect to your wallet using the "Connect to Wallet" button');
       return;
     }
 
@@ -118,7 +118,7 @@
 
   async function deleteList(account = listAccount) {
     if (!connectedToWallet) {
-      alert('Please connect to your wallet first');
+      alert('Please connect to your wallet using the "Connect to Wallet" button');
       return;
     }
 
@@ -133,7 +133,7 @@
 
   async function sendTip(pubkey) {
     if (!connectedToWallet) {
-      alert('Please connect to your wallet first');
+      alert('Please connect to your wallet using the "Connect to Wallet" button');
       return;
     }
 
