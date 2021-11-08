@@ -30,6 +30,8 @@
     const wallets = await import('@solana/wallet-adapter-wallets');
     const walletList = [
       wallets.getPhantomWallet(),
+      wallets.getLedgerWallet(),
+      wallets.getBitKeepWallet(),
       wallets.getSlopeWallet(),
       wallets.getBitpieWallet(),
       wallets.getSolflareWallet(),
