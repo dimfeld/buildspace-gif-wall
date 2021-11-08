@@ -53,7 +53,8 @@
       <div class="relative">
         <button
           on:click={() => (switchWalletMenuOpen = !switchWalletMenuOpen)}
-          class="text-sm font-medium rounded-lg border border-gray-500 px-3 py-2">Switch Wallets</button>
+          class="text-sm font-medium rounded-lg border border-gray-500 px-3 py-2"
+          >{#if $wallet.state === WalletConnectionState.connected}Switch Wallets{:else}Connect to Wallet{/if}</button>
         {#if switchWalletMenuOpen}
           <div class="absolute right-0">
             <WalletList on:select={() => (switchWalletMenuOpen = false)} />
@@ -62,11 +63,7 @@
       </div>
     </header>
     <main class="pt-2">
-      {#if $wallet.state === WalletConnectionState.connected}
-        <slot />
-      {:else}
-        <WalletGrid />
-      {/if}
+      <slot />
     </main>
     <footer class="mt-auto py-4 flex justify-between items-end">
       <div class="flex flex-row items-center space-x-2">

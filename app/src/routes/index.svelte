@@ -4,12 +4,22 @@
 
   import { getSolanaContext } from '$lib/context';
   import idl from '$lib/idl/buildspace_gif_wall.json';
-  import { PublicKey, SystemProgram } from '@solana/web3.js';
+  import { Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
+  import { WalletConnectionState } from '../lib/wallets';
+  import { onMount } from 'svelte';
 
   const { wallet, connection, commitmentLevel } = getSolanaContext();
 
   const programID = new PublicKey(idl.metadata.address);
-  $: provider = new Provider(connection, $wallet, {
+  const unconnectedWallet = {
+    publicKey: new Keypair().publicKey,
+    signTransaction: () => Promise.reject(new Error('Not connected to wallet')),
+    signAllTransactions: () => Promise.reject(new Error('Not connected to wallet')),
+  };
+
+  $: connectedToWallet = $wallet.state === WalletConnectionState.connected;
+  $: providerWallet = connectedToWallet ? $wallet : unconnectedWallet;
+  $: provider = new Provider(connection, providerWallet, {
     preflightCommitment: commitmentLevel,
   });
   $: program = new Program(idl, programID, provider);
@@ -29,7 +39,7 @@
 
   async function initAccount() {
     let [account, listAccountBump] = await web3.PublicKey.findProgramAddress(
-      [new TextEncoder().encode('giflist2'), provider.wallet.publicKey.toBytes()],
+      [new TextEncoder().encode('giflist2'), listOwner.toBytes()],
       program.programId
     );
 
@@ -54,7 +64,10 @@
     items = listData.gifs;
   }
 
-  $: if (program && !listAccount) {
+  let mounted = false;
+  onMount(() => (mounted = true));
+
+  $: if (program && !listAccount && mounted) {
     initAccount().catch(console.error);
   }
 
@@ -62,6 +75,11 @@
 
   let textInput = '';
   async function handleAdd(e: Event) {
+    if (!connectedToWallet) {
+      alert('Please connect to your wallet first');
+      return;
+    }
+
     e.preventDefault();
     if (!textInput) {
       return;
@@ -82,6 +100,11 @@
   }
 
   async function upvote(url: string) {
+    if (!connectedToWallet) {
+      alert('Please connect to your wallet first');
+      return;
+    }
+
     await program.rpc.upvote(url, {
       accounts: {
         baseAccount: listAccount,
@@ -94,6 +117,11 @@
   }
 
   async function deleteList(account = listAccount) {
+    if (!connectedToWallet) {
+      alert('Please connect to your wallet first');
+      return;
+    }
+
     await program.rpc.deleteList({
       accounts: {
         baseAccount: account,
@@ -104,6 +132,11 @@
   }
 
   async function sendTip(pubkey) {
+    if (!connectedToWallet) {
+      alert('Please connect to your wallet first');
+      return;
+    }
+
     const transaction = new web3.Transaction().add(
       web3.SystemProgram.transfer({
         fromPubkey: provider.wallet.publicKey,
